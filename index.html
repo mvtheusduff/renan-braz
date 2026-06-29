@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Renan Braz | Ministério Musical</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0A0A0F;
+    --deep: #110D1E;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --cream: #F5F0E8;
+    --muted: rgba(245,240,232,0.55);
+    --card-bg: rgba(255,255,255,0.04);
+    --border: rgba(201,168,76,0.2);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1);
+  }
+  .reveal.from-left {
+    transform: translateX(-40px);
+  }
+  .reveal.from-right {
+    transform: translateX(40px);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.32s; }
+  .reveal-delay-4 { transition-delay: 0.44s; }
+  .reveal-delay-5 { transition-delay: 0.56s; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.97), transparent);
+    backdrop-filter: blur(8px);
+    transition: padding 0.4s, background 0.4s;
+  }
+  nav.scrolled {
+    padding: 12px 48px;
+    background: rgba(10,10,15,0.98);
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.82rem;
+    letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500;
+    transition: color 0.3s; position: relative; padding-bottom: 3px;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px; background: var(--gold); transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* Hamburger mobile */
+  .nav-hamburger {
+    display: none; flex-direction: column; gap: 5px; cursor: pointer;
+    padding: 4px; background: none; border: none;
+  }
+  .nav-hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--cream); border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none; position: fixed; inset: 0; top: 64px; z-index: 99;
+    background: rgba(10,10,15,0.98); backdrop-filter: blur(16px);
+    flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .mobile-menu.open { opacity: 1; pointer-events: all; }
+  .mobile-menu a {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700; color: var(--cream);
+    text-decoration: none; letter-spacing: 0.04em;
+    transition: color 0.3s;
+  }
+  .mobile-menu a:hover { color: var(--gold); }
+
+  .nav-cta {
+    background: transparent; border: 1px solid var(--gold);
+    color: var(--gold); padding: 10px 24px; border-radius: 2px;
+    font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--black); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; overflow: hidden;
+  }
+
+  .hero-light {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+
+  .hero-left {
+    position: relative; z-index: 2;
+    padding: 140px 64px 80px 80px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .eyebrow::before {
+    content: ''; display: block; width: 32px; height: 1px; background: var(--gold);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5.5vw, 5.2rem);
+    font-weight: 700; line-height: 1.05;
+    color: var(--cream); margin-bottom: 12px;
+    opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+  }
+  h1 em { font-style: italic; color: var(--gold); display: block; }
+
+  .hero-subtitle {
+    font-size: 1rem; color: var(--muted); font-weight: 300;
+    max-width: 420px; margin: 24px 0 48px; line-height: 1.75;
+    opacity: 0; animation: fadeUp 0.9s 0.7s forwards;
+  }
+
+  .hero-buttons {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.9s 0.85s forwards;
+  }
+
+  .btn-primary {
+    background: var(--gold); color: var(--black);
+    padding: 16px 36px; border: none; border-radius: 2px;
+    font-family: 'Inter', sans-serif; font-size: 0.82rem;
+    font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none; transition: all 0.3s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
+
+  .btn-secondary {
+    background: transparent; color: var(--cream);
+    padding: 16px 36px; border: 1px solid rgba(245,240,232,0.25);
+    border-radius: 2px; font-family: 'Inter', sans-serif; font-size: 0.82rem;
+    font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none; transition: all 0.3s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Spotify badge */
+  .spotify-badge {
+    margin-top: 48px; display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px; border: 1px solid var(--border);
+    border-radius: 40px; width: fit-content;
+    background: rgba(29,185,84,0.06); transition: all 0.35s;
+    text-decoration: none;
+    opacity: 0; animation: fadeUp 0.9s 1s forwards;
+  }
+  .spotify-badge:hover { background: rgba(29,185,84,0.14); border-color: rgba(29,185,84,0.45); transform: translateY(-2px); }
+  .spotify-badge svg { flex-shrink: 0; }
+  .spotify-label { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .spotify-track { font-size: 0.85rem; font-weight: 600; color: var(--cream); font-style: italic; }
+
+  /* Hero right — image with soft edge blur */
+  .hero-right {
+    position: relative; z-index: 2; height: 100vh;
+    overflow: hidden;
+  }
+  .hero-right img {
+    width: 100%; height: 100%; object-fit: cover;
+    object-position: center top;
+    filter: brightness(0.78) contrast(1.05);
+    opacity: 0; animation: heroImgIn 1.2s 0.4s forwards;
+  }
+  /* Soft blur edges on the photo */
+  .hero-right::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(to right, var(--black) 0%, transparent 38%),
+      linear-gradient(to top, var(--black) 0%, transparent 30%),
+      linear-gradient(to bottom, var(--black) 0%, transparent 18%);
+    pointer-events: none;
+  }
+  .hero-right::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 2;
+    backdrop-filter: blur(0px);
+    /* Radial mask to blur photo edges softly */
+    -webkit-mask-image: radial-gradient(ellipse 75% 80% at 60% 50%, black 55%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 80% at 60% 50%, black 55%, transparent 100%);
+    background: transparent;
+    pointer-events: none;
+  }
+
+  /* ── ABOUT ── */
+  .about {
+    padding: 120px 80px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+    background: var(--deep);
+  }
+  .about-image {
+    position: relative; border-radius: 4px; overflow: hidden;
+  }
+  .about-image img {
+    width: 100%; display: block;
+    filter: brightness(0.9) contrast(1.05);
+    border-radius: 4px;
+    transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+  .about-image:hover img { transform: scale(1.03); }
+  /* Soft blur border on about image */
+  .about-image::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(17,13,30,0.5) 0%, transparent 20%),
+      linear-gradient(to top, rgba(17,13,30,0.6) 0%, transparent 25%),
+      linear-gradient(to right, rgba(17,13,30,0.4) 0%, transparent 20%),
+      linear-gradient(to left, rgba(17,13,30,0.4) 0%, transparent 20%);
+    pointer-events: none; border-radius: 4px;
+  }
+  .about-image::before {
+    content: '';
+    position: absolute; inset: -2px;
+    background: linear-gradient(135deg, var(--gold), transparent 60%);
+    z-index: -1; border-radius: 4px;
+  }
+
+  .gold-line {
+    display: block; width: 48px; height: 2px;
+    background: var(--gold); margin-bottom: 24px;
+  }
+  .about-text h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700; line-height: 1.15; margin-bottom: 28px;
+    color: var(--cream);
+  }
+  .about-text h2 span { color: var(--gold); font-style: italic; }
+  .about-text p {
+    color: var(--muted); font-size: 0.97rem; line-height: 1.85;
+    margin-bottom: 20px; font-weight: 300;
+  }
+  .about-stats {
+    display: flex; gap: 40px; margin-top: 40px;
+    padding-top: 32px; border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; font-weight: 700; color: var(--gold); line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-top: 6px;
+  }
+
+  /* ── VIDEO ── */
+  .video-section {
+    padding: 100px 80px;
+    text-align: center;
+    background: var(--black);
+  }
+  .section-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .section-eyebrow::before, .section-eyebrow::after {
+    content: ''; display: block; width: 32px; height: 1px; background: var(--gold);
+  }
+  .video-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
+    color: var(--cream); margin-bottom: 16px;
+  }
+  .video-section p {
+    color: var(--muted); font-size: 0.95rem; max-width: 500px;
+    margin: 0 auto 56px; font-weight: 300;
+  }
+  .video-wrapper {
+    max-width: 700px; margin: 0 auto;
+    position: relative; border-radius: 8px; overflow: hidden;
+    box-shadow: 0 0 80px rgba(201,168,76,0.15);
+    border: 1px solid var(--border);
+    background: #000;
+    transition: box-shadow 0.4s;
+  }
+  .video-wrapper:hover { box-shadow: 0 0 120px rgba(201,168,76,0.25); }
+  .video-wrapper video {
+    width: 100%; display: block;
+    max-height: 80vh; object-fit: contain;
+  }
+
+  /* ── SINGLE ── */
+  .single-section {
+    padding: 100px 80px;
+    background: linear-gradient(135deg, #0D0B18 0%, #1A1025 50%, #0A0A0F 100%);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .single-section::before {
+    content: '';
+    position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    animation: pulseGlow 4s ease-in-out infinite;
+  }
+  .single-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
+    color: var(--cream); margin-bottom: 12px;
+  }
+  .single-track {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-style: italic; font-weight: 600;
+    color: var(--gold); margin: 20px 0;
+    letter-spacing: -0.01em;
+  }
+  .single-desc {
+    color: var(--muted); font-size: 0.95rem; max-width: 540px;
+    margin: 0 auto 48px; font-weight: 300; line-height: 1.8;
+  }
+  .platforms {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  }
+  .platform-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 28px; border-radius: 40px;
+    font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em;
+    text-decoration: none; transition: all 0.3s; border: 1px solid transparent;
+  }
+  .platform-spotify {
+    background: rgba(29,185,84,0.12); color: #1DB954;
+    border-color: rgba(29,185,84,0.3);
+  }
+  .platform-spotify:hover { background: rgba(29,185,84,0.22); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(29,185,84,0.2); }
+
+  /* ── CONTACT ── */
+  .contact {
+    padding: 100px 80px;
+    background: var(--deep);
+  }
+  .contact-inner {
+    max-width: 960px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: start;
+  }
+  .contact h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
+    color: var(--cream); margin-bottom: 16px;
+  }
+  .contact h2 span { color: var(--gold); font-style: italic; }
+  .contact-sub {
+    color: var(--muted); font-size: 0.95rem; font-weight: 300;
+    line-height: 1.8; margin-bottom: 40px;
+  }
+
+  /* Contact photo with soft blur edges */
+  .contact-photo-wrap {
+    margin-bottom: 32px; border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--border); position: relative;
+  }
+  .contact-photo-wrap img {
+    width: 100%; display: block;
+    filter: brightness(0.85) contrast(1.05);
+    max-height: 340px; object-fit: cover; object-position: center top;
+    border-radius: 6px;
+    transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+  .contact-photo-wrap:hover img { transform: scale(1.04); }
+  .contact-photo-wrap::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to top, rgba(17,13,30,0.85) 0%, transparent 45%),
+      linear-gradient(to bottom, rgba(17,13,30,0.4) 0%, transparent 20%),
+      linear-gradient(to right, rgba(17,13,30,0.3) 0%, transparent 25%),
+      linear-gradient(to left, rgba(17,13,30,0.3) 0%, transparent 25%);
+    pointer-events: none;
+  }
+
+  .contact-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 0; border-bottom: 1px solid var(--border);
+    text-decoration: none; color: var(--cream); transition: all 0.3s;
+  }
+  .contact-item:hover { color: var(--gold); padding-left: 8px; }
+  .contact-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--card-bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .contact-item:hover .contact-icon { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .contact-info-label {
+    font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 2px;
+  }
+  .contact-info-value { font-size: 0.92rem; font-weight: 500; }
+
+  /* Form */
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500;
+  }
+  .form-group input, .form-group textarea, .form-group select {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 2px; padding: 14px 16px; color: var(--cream);
+    font-family: 'Inter', sans-serif; font-size: 0.9rem;
+    outline: none; transition: border-color 0.3s, box-shadow 0.3s; resize: none;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  }
+  .form-group input::placeholder, .form-group textarea::placeholder {
+    color: rgba(245,240,232,0.25);
+  }
+  .form-group select option { background: #1A1025; }
+  .form-group textarea { min-height: 120px; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 32px 80px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--black);
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700; color: var(--gold);
+    letter-spacing: 0.1em; text-decoration: none;
+  }
+  footer p {
+    font-size: 0.75rem; color: rgba(245,240,232,0.3); letter-spacing: 0.06em;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes heroImgIn {
+    from { opacity: 0; transform: scale(1.04); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50%       { opacity: 1;   transform: translateX(-50%) scale(1.12); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    /* Nav */
+    nav { padding: 16px 20px; }
+    nav.scrolled { padding: 10px 20px; }
+    .nav-links, .nav-cta { display: none; }
+    .nav-hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+
+    /* Hero: stacked, photo on top */
+    .hero {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      min-height: 100svh;
+    }
+    .hero-right {
+      order: -1;
+      height: 56vw;
+      min-height: 260px;
+      max-height: 380px;
+    }
+    /* On mobile, blur is from all edges toward center */
+    .hero-right::before {
+      background:
+        linear-gradient(to bottom, var(--black) 0%, transparent 30%),
+        linear-gradient(to top, var(--black) 0%, transparent 30%),
+        linear-gradient(to right, rgba(10,10,15,0.3) 0%, transparent 30%),
+        linear-gradient(to left, rgba(10,10,15,0.3) 0%, transparent 30%);
+    }
+    .hero-left {
+      padding: 28px 24px 60px;
+    }
+    h1 { font-size: clamp(2.6rem, 12vw, 4rem); }
+    .hero-subtitle { font-size: 0.95rem; max-width: 100%; margin: 16px 0 32px; }
+    .hero-buttons { gap: 12px; }
+    .btn-primary, .btn-secondary {
+      padding: 14px 24px; font-size: 0.78rem; width: 100%; justify-content: center;
+    }
+    .spotify-badge { width: 100%; }
+
+    /* About */
+    .about {
+      grid-template-columns: 1fr;
+      padding: 64px 20px;
+      gap: 36px;
+    }
+    .about-image { order: -1; }
+    .about-stats { gap: 20px; flex-wrap: wrap; }
+
+    /* Video / Single / Contact */
+    .video-section, .single-section { padding: 64px 20px; }
+    .contact { padding: 64px 20px; }
+    .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+
+    /* Footer */
+    footer {
+      flex-direction: column; gap: 16px;
+      text-align: center; padding: 28px 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 { font-size: clamp(2.2rem, 14vw, 3.2rem); }
+    .single-track { font-size: clamp(2rem, 12vw, 3.2rem); }
+    .about-stats { gap: 16px; }
+    .stat-num { font-size: 2rem; }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { transition: none; }
+    .eyebrow, h1, .hero-subtitle, .hero-buttons, .spotify-badge, .hero-right img {
+      animation: none; opacity: 1; transform: none;
+    }
+    .single-section::before { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">Renan Braz</a>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#musica">Música</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <a href="#contato" class="nav-cta">Contato para Agenda</a>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#sobre" onclick="closeMobileMenu()">Sobre</a>
+  <a href="#musica" onclick="closeMobileMenu()">Música</a>
+  <a href="#contato" onclick="closeMobileMenu()">Contato para Agenda</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+
+  <!-- Light rays SVG -->
+  <svg class="hero-light" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ray1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="ray2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.1"/>
+        <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="blur1"><feGaussianBlur stdDeviation="8"/></filter>
+    </defs>
+    <polygon points="600,0 400,900 700,900" fill="url(#ray1)" filter="url(#blur1)" opacity="0.7">
+      <animateTransform attributeName="transform" type="rotate" values="-2;2;-2" dur="8s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </polygon>
+    <polygon points="600,0 300,900 550,900" fill="url(#ray2)" filter="url(#blur1)" opacity="0.5">
+      <animateTransform attributeName="transform" type="rotate" values="3;-3;3" dur="11s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </polygon>
+    <polygon points="600,0 650,900 900,900" fill="url(#ray2)" filter="url(#blur1)" opacity="0.4">
+      <animateTransform attributeName="transform" type="rotate" values="-1;4;-1" dur="14s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </polygon>
+  </svg>
+
+  <div class="hero-left">
+    <span class="eyebrow">Ministério Musical</span>
+    <h1>Renan<br><em>Braz</em></h1>
+    <p class="hero-subtitle">
+      Ministrando desde os 5 anos de idade, a voz que edifica, comove e alcança corações através da música gospel.
+    </p>
+    <div class="hero-buttons">
+      <a href="#contato" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.57 3.31 2 2 0 0 1 3.54 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Contato para Agenda
+      </a>
+      <a href="#musica" class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Ouça o Single
+      </a>
+    </div>
+    <a href="https://open.spotify.com/intl-pt/artist/1vf8NFIFWsqwdHnQG6JVT9" target="_blank" class="spotify-badge">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+      <div>
+        <div class="spotify-label">Disponível no Spotify</div>
+        <div class="spotify-track">Eu me Entrego</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,240,232,0.4)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="hero-right">
+    <img src="img/renan2.jpg" alt="Renan Braz ministrando no palco">
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="sobre">
+  <div class="about-image reveal from-left">
+    <img src="img/renan1.jpg" alt="Renan Braz ministrando no palco">
+  </div>
+  <div class="about-text">
+    <span class="gold-line reveal reveal-delay-1"></span>
+    <h2 class="reveal reveal-delay-2">Uma vida <span>ungida</span> pelo louvor</h2>
+    <p class="reveal reveal-delay-3">
+      Renan Braz é um ministro de louvor que carrega o dom desde os 5 anos de idade. Sua trajetória é marcada por uma entrega genuína à música gospel e à edificação de vidas através da adoração.
+    </p>
+    <p class="reveal reveal-delay-4">
+      Participante do <strong style="color:var(--cream);">Som Gospel 93FM 2021</strong> e multi-premiado em concursos musicais, incluindo um 2º lugar recente que confirmou seu talento em nível regional. Hoje, com seu mais novo single lançado em todas as plataformas, Renan segue alcançando corações ao redor do Brasil.
+    </p>
+    <div class="about-stats reveal reveal-delay-5">
+      <div>
+        <div class="stat-num">20+</div>
+        <div class="stat-label">Anos de ministério</div>
+      </div>
+      <div>
+        <div class="stat-num">93FM</div>
+        <div class="stat-label">Som Gospel 2021</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Vidas edificadas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="video-section" id="video">
+  <div class="section-eyebrow reveal">Ministração</div>
+  <h2 class="reveal reveal-delay-1">Veja Renan em Ação</h2>
+  <p class="reveal reveal-delay-2">Cada ministração é um encontro. Uma entrega que vai além da música.</p>
+  <div class="video-wrapper reveal reveal-delay-3">
+    <video controls playsinline preload="metadata">
+      <source src="img/renanvideo.mp4" type="video/mp4">
+      Seu navegador não suporta vídeos.
+    </video>
+  </div>
+</section>
+
+<!-- SINGLE -->
+<section class="single-section" id="musica">
+  <div class="section-eyebrow reveal">Novo Single</div>
+  <h2 class="reveal reveal-delay-1">Ouça agora</h2>
+  <div class="single-track reveal reveal-delay-2">Eu me Entrego</div>
+  <p class="single-desc reveal reveal-delay-3">
+    A canção que tem edificado muitas vidas e alcançado corações. Disponível em todas as plataformas de streaming.
+  </p>
+  <div class="platforms reveal reveal-delay-4">
+    <a href="https://open.spotify.com/intl-pt/artist/1vf8NFIFWsqwdHnQG6JVT9" target="_blank" class="platform-btn platform-spotify">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+      Ouvir no Spotify
+    </a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contato">
+  <div class="contact-inner">
+    <div>
+      <span class="gold-line reveal"></span>
+      <h2 class="reveal reveal-delay-1">Vamos <span>ministrar</span> juntos?</h2>
+      <p class="contact-sub reveal reveal-delay-2">
+        Para cachês, agendamentos em igrejas, eventos e cultos especiais, entre em contato. Renan e sua equipe retornam com agilidade.
+      </p>
+
+      <div class="contact-photo-wrap reveal reveal-delay-3">
+        <img src="img/renan3.jpg" alt="Renan Braz">
+      </div>
+
+      <a href="https://wa.me/5521967805157" target="_blank" class="contact-item reveal reveal-delay-2">
+        <div class="contact-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        </div>
+        <div>
+          <div class="contact-info-label">WhatsApp</div>
+          <div class="contact-info-value">(21) 96780-5157</div>
+        </div>
+      </a>
+
+      <a href="mailto:Contato.renanbraz@gmail.com" class="contact-item reveal reveal-delay-3">
+        <div class="contact-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div>
+          <div class="contact-info-label">E-mail</div>
+          <div class="contact-info-value">Contato.renanbraz@gmail.com</div>
+        </div>
+      </a>
+
+      <a href="https://www.instagram.com/renanbrazof/" target="_blank" class="contact-item reveal reveal-delay-4">
+        <div class="contact-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </div>
+        <div>
+          <div class="contact-info-label">Instagram</div>
+          <div class="contact-info-value">@renanbrazof</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Form -->
+    <div class="contact-form reveal from-right">
+      <div class="form-group">
+        <label>Tipo de Evento</label>
+        <select>
+          <option value="">Selecione o tipo de evento</option>
+          <option>Culto / Celebração</option>
+          <option>Congresso ou Conferência</option>
+          <option>Retiro Espiritual</option>
+          <option>Casamento</option>
+          <option>Evento Evangelístico</option>
+          <option>Outros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mensagem</label>
+        <textarea placeholder="Fale sobre o seu evento: data, local e o que você precisa..."></textarea>
+      </div>
+      <a href="https://wa.me/5521967805157?text=Olá%20Renan!%20Vi%20seu%20site%20e%20gostaria%20de%20conversar%20sobre%20uma%20ministração." target="_blank" class="btn-primary" style="text-align:center; justify-content:center; margin-top:4px;">
+        Enviar via WhatsApp
+      </a>
+      <a href="mailto:Contato.renanbraz@gmail.com?subject=Proposta de Ministração" class="btn-secondary" style="text-align:center; justify-content:center;">
+        Enviar por E-mail
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Renan Braz</a>
+  <p>© 2025 Renan Braz — Ministério Musical. Todos os direitos reservados.</p>
+  <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap; justify-content:center;">
+    <a href="https://www.instagram.com/renanbrazof/" target="_blank" style="color:var(--muted); text-decoration:none; font-size:0.75rem; letter-spacing:0.08em; transition:color 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">
+      @renanbrazof
+    </a>
+    <span style="color:rgba(245,240,232,0.2); font-size:0.7rem;">|</span>
+    <a href="https://www.instagram.com/dvf.tech/" target="_blank" style="display:flex; align-items:center; gap:8px; text-decoration:none; opacity:0.65; transition:opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.65'">
+      <span style="color:var(--muted); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;">Site por</span>
+      <img src="dvf_logo.png" alt="DVF Tech" style="height:20px; width:auto; filter:brightness(0) invert(1);">
+    </a>
+  </div>
+</footer>
+
+<script>
+  // ── Scroll: nav compact
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  // ── Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  function closeMobileMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── Scroll reveal with IntersectionObserver
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
